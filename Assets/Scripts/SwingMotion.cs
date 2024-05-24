@@ -2,41 +2,41 @@
 
 public class SwingMotion : MonoBehaviour
 {
-    public GameObject pivotObject; // 中心物体
-    public float distance = 5.0f; // 单摆的绳长
-    public float frequency = 1.0f; // 频率
-    public float amplitude = 1.0f; // 振幅
-    public Vector3 direction = Vector3.right; // 摆动方向
+    public GameObject pivotObject; // 回転の中心となるオブジェクト
+    public bool isSwinging = false; // スイングがアクティブかどうかのフラグ
+    public float swingangle = 45.0f; // スイングの角度
+    public float frequency = 1.0f; // スイングの頻度
 
-    private bool isSwinging = false;
-    private float angle = 0f;
-    private GameObject dot;
+    private float radius; // 中心からの距離
+    private float angle = 0f; // 現在の角度
+    private GameObject dot; // スイングするドットオブジェクト
 
     void Start()
     {
-        dot = GameObject.FindWithTag("Dots");
+        radius = this.GetComponent<RandomDotGenerator>().RandomDotsDistance; // ランダムドットジェネレータから距離を取得
+        dot = GameObject.FindWithTag("Dots"); // タグ'Dots'を持つオブジェクトを検索
         if (dot == null)
         {
-            Debug.LogError("No GameObject with tag 'Dots' found!");
+            Debug.LogError("No GameObject with tag 'Dots' found!"); // オブジェクトが見つからない場合のエラー
         }
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space)) // スペースキーでスイングのオン/オフ
         {
             isSwinging = !isSwinging;
-            angle = 0f;
         }
 
-        if (isSwinging && dot != null)
+        if (isSwinging && dot != null) // スイングがアクティブで、ドットオブジェクトが存在する場合
         {
-            angle += Time.deltaTime * frequency * 2 * Mathf.PI;
+            angle = swingangle * Mathf.Sin(Time.time * frequency); // 角度を計算
 
-            float offsetX = Mathf.Sin(angle) * amplitude;
-            float offsetY = Mathf.Cos(angle) * amplitude;
-            Vector3 offsetPosition = pivotObject.transform.position + direction.normalized * distance + new Vector3(offsetX, -offsetY, 0);
-            dot.transform.position = offsetPosition;
+            Vector3 swingDirection = Quaternion.Euler(0, angle, 0) * pivotObject.transform.forward; // スイング方向を計算
+            Vector3 newPosition = pivotObject.transform.position + swingDirection * radius; // 新しい位置を計算
+
+            dot.transform.position = newPosition; // ドットの位置を更新
+            dot.transform.LookAt(pivotObject.transform); // ドットが中心オブジェクトを向くようにする
         }
     }
 }
