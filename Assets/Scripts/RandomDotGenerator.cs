@@ -9,7 +9,7 @@ public class RandomDotGenerator : MonoBehaviour
     public float RandomDotsAngle = 90; // ドットが配置される範囲の角度
     public float RandomDotsDensity = 10; // ドットの密度
     public float RandomDotsSize = 0.1f; // ドットの基本サイズ
-    public float RandomDotsMaxHeight = 15;
+    public float RandomDotsMaxHeight = 20; //ランダムドットの生成範囲（左右に振る場合の上下）の指定
     public int RandomDotsAmount; // 生成されるドットの数
 
     void Awake()
@@ -27,11 +27,9 @@ public class RandomDotGenerator : MonoBehaviour
                 Debug.LogError("No Camera Assigned/Found!");
             }
         }
-
-        CreateRandomDot(); // ドットを生成する
     }
 
-    public void CreateRandomDot()
+    public void CreateRandomDot(bool adjustScale = true)
     {
         Random.InitState(seed); // ランダムジェネレータの初期化
         float areaSize = 2 * Mathf.PI * RandomDotsDistance * RandomDotsMaxHeight * RandomDotsAngle / 180f; // ドットが配置される領域（面積）の計算
@@ -52,8 +50,8 @@ public class RandomDotGenerator : MonoBehaviour
 
             GameObject dot = GameObject.CreatePrimitive(PrimitiveType.Sphere); // 球体ドットを作成
             dot.transform.position = randomPosition;
-
-            float distance = Vector3.Distance(randomPosition, viewCamera.transform.position); // カメラからの距離に基づいたサイズ調整
+            float distance = RandomDotsDistance;
+            if (adjustScale) distance = Vector3.Distance(randomPosition, viewCamera.transform.position); // カメラからの距離に基づいたサイズ調整
             float adjustedSize = baseSize * distance / RandomDotsDistance;
             dot.transform.localScale = new Vector3(adjustedSize, adjustedSize, adjustedSize);
             Renderer dotRenderer = dot.GetComponent<Renderer>();
