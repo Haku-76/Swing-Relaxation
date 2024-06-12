@@ -6,10 +6,10 @@ public class RandomDotGenerator : MonoBehaviour
     public int seed = 1; // ランダム生成のためのシード値
     public float RandomDotsDistance = 10; // ドットの距離
     [Range(0, 180)]
-    public float RandomDotsAngle = 45; // ドットが配置される範囲の角度
+    public float RandomDotsAngle = 90; // ドットが配置される範囲の角度
     public float RandomDotsDensity = 10; // ドットの密度
     public float RandomDotsSize = 0.1f; // ドットの基本サイズ
-    public float RandomDotsMaxHeight = 10;
+    public float RandomDotsMaxHeight = 15;
     public int RandomDotsAmount; // 生成されるドットの数
 
     void Awake()
