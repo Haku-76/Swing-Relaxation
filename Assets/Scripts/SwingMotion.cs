@@ -54,7 +54,7 @@ public class SwingMotion : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space)) // スペースキーでスイングのオン/オフ
+        if (Input.GetKeyDown(KeyCode.Return)) // スイングのオン/オフ
         {
             isSwinging = !isSwinging;
         }

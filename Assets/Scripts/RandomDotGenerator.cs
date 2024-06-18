@@ -56,10 +56,7 @@ public class RandomDotGenerator : MonoBehaviour
             dot.transform.localScale = new Vector3(adjustedSize, adjustedSize, adjustedSize);
             Renderer dotRenderer = dot.GetComponent<Renderer>();
             dotRenderer.material = new Material(Shader.Find("Unlit/Color")); // マテリアル設定
-            if (i < numberOfDots / 2)
-                dotRenderer.material.color = Color.white; // ドットの色を半分は白に
-            else
-                dotRenderer.material.color = Color.black; // 半分は黒に
+            dotRenderer.material.color = Color.white;
             dot.transform.SetParent(parent.transform); // 親オブジェクトに設定
         }
     }
