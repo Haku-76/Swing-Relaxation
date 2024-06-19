@@ -8,9 +8,11 @@ public class RandomDotGenerator : MonoBehaviour
     public float RandomDotsDistance = 10; // ドットの距離
     [Range(1f, 180)]
     public float RandomDotsAngle = 90; // ドットが配置される範囲の角度
-    public float RandomDotsDensity = 10; // ドットの密度
-    public float RandomDotsSize = 0.1f; // ドットの基本サイズ
+    [Range(0.1f, 40f)]
     public float RandomDotsMaxHeight = 20; //ランダムドットの生成範囲（左右に振る場合の上下）の指定
+    public float RandomDotsDensity = 10; // ドットの密度
+    [Range(0.01f, 1f)]
+    public float RandomDotsSize = 0.1f; // ドットの基本サイズ
     public int RandomDotsAmount; // 生成されるドットの数
 
     private GameObject parent;
