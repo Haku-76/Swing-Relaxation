@@ -17,6 +17,13 @@ public class SwingMotion : MonoBehaviour
         RANDOM = 1
     }
 
+    public enum MARK_TYPE
+    {
+        NONE = 0,
+        SPHERE = 1,
+        CROSS = 2
+    }
+
     public SWING_TYPE direction; //スイングする方向を指定
     public MOVE_TYPE moveType; //スイングするかランダムに動かすか指定
     public bool isMoving = false; // スイングがアクティブかどうかのフラグ
@@ -33,6 +40,11 @@ public class SwingMotion : MonoBehaviour
     [Tooltip("最大で秒間にどれだけ回るか（度）")]
     public float rotateRange = 10;
 
+    [Header("注視点のパラメータ")]
+    public MARK_TYPE markType = MARK_TYPE.CROSS;
+    public float markSize = 0.1f;
+    public Color markColor = new Color(1f,1f,1f);
+
     private float angle = 0f; // 現在の角度
     private GameObject dot; // スイングするドットオブジェクト
     private float passedTime; // スイング開始時にドットの位置が急に変わらないようにするために経過時間で回転
@@ -40,6 +52,9 @@ public class SwingMotion : MonoBehaviour
     private int movedCount = 0; // ランダムドットの方向変えるためのカウンタ
     private List<float> translateValues = new List<float>(); // 各ドットの平行移動幅を格納
     private List<float> rotateValues = new List<float>(); // 各ドットの回転量を格納
+    private GameObject sphereMark; //注視点（球）
+    private GameObject crossMark; //注視点（十字）
+    private GameObject marks; //注視点オブジェクトの親
     void Start()
     {
         //ドット生成用コンポーネントが見つからないなら探す
@@ -65,10 +80,40 @@ public class SwingMotion : MonoBehaviour
         }
 
         defaultPosition = dot.transform.position;
+
+        //注視点の生成
+        {
+            //親オブジェクトの生成
+            marks = new GameObject("Marks");
+
+            //球体の生成
+            sphereMark = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            Renderer dotRenderer = sphereMark.GetComponent<Renderer>();
+            dotRenderer.material = new Material(Shader.Find("Unlit/Color"));
+            dotRenderer.material.color = Color.white;
+            sphereMark.transform.SetParent(marks.transform);
+
+            //十字の生成
+            GameObject prefab = Resources.Load<GameObject>("Cross");
+            if (prefab != null)
+            {
+                // プレハブを生成
+                crossMark = Instantiate(prefab);
+            }
+            else
+            {
+                Debug.LogError("Prefab not found");
+            }
+            crossMark.transform.localScale = new Vector3(22, 22, 22); //球体と同じぐらいのサイズに調整
+            crossMark.transform.SetParent(marks.transform);
+
+            marks.transform.position = defaultPosition + new Vector3(0, 0, generator.RandomDotsDistance);
+        }
     }
 
     void Update()
     {
+        DisplayMark();
 
         if (Input.GetKeyDown(KeyCode.Return)) // スイングのオン/オフ
         {
@@ -200,5 +245,27 @@ public class SwingMotion : MonoBehaviour
                 movedCount++;
             }
         }
+    }
+
+    public void DisplayMark()
+    {
+        if (markType == MARK_TYPE.NONE)
+        {
+            sphereMark.SetActive(false);
+            crossMark.SetActive(false);
+        }
+        else if (markType == MARK_TYPE.SPHERE)
+        {
+            sphereMark.SetActive(true);
+            crossMark.SetActive(false);
+            sphereMark.GetComponent<Renderer>().material.color = markColor;
+        }
+        else if (markType == MARK_TYPE.CROSS)
+        {
+            sphereMark.SetActive(false);
+            crossMark.SetActive(true);
+            crossMark.GetComponent<SpriteRenderer>().color = markColor;
+        }
+        marks.transform.localScale = new Vector3(markSize, markSize, markSize);
     }
 }
